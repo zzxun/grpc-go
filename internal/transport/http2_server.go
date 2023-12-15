@@ -422,13 +422,6 @@ func (t *http2Server) operateHeaders(frame *http2.MetaHeadersFrame, handle func(
 			if timeout, err = decodeTimeout(hf.Value); err != nil {
 				headerError = status.Newf(codes.Internal, "malformed grpc-timeout: %v", err)
 			}
-		// "Transports must consider requests containing the Connection header
-		// as malformed." - A41
-		case "connection":
-			if t.logger.V(logLevel) {
-				t.logger.Infof("Received a HEADERS frame with a :connection header which makes the request malformed, as per the HTTP/2 spec")
-			}
-			protocolError = true
 		default:
 			if isReservedHeader(hf.Name) && !isWhitelistedHeader(hf.Name) {
 				break
